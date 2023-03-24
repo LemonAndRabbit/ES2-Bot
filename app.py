@@ -6,7 +6,7 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from utils.logging import logger
 from utils import regex
-from google_sheet.io import append_to_sheet
+from google_sheet.io import append_to_sheet, get_from_sheet
 from utils.compose import compose_onetoall, id_reparthenese, compose_formatted_time
 from utils.parse_cfg import parse_cfg
 
@@ -35,10 +35,6 @@ def handle_app_mention_events(body, say):
         
         real_target.append(user)
         real_target_names.append(identity['user']['real_name'])
-    
-    print(real_target)
-    print(real_target_names)
-
     if len(real_target) > 0:
         logger.debug(f'User {source} to {real_target}: {real_target_names}')
         source_ideneity = app.client.users_info(user=source)
@@ -49,11 +45,19 @@ def handle_app_mention_events(body, say):
         constants = [time, text]
         values = compose_onetoall(source_name, real_target_names, constants)
 
-        # append to the sheet
+        # append to the details sheet
         append_to_sheet(config['spreadsheet_id'], config['sheet_name']+'!A1:A1', values)
 
+        # check the summary sheet
+        summary_names = get_from_sheet(config['spreadsheet_id'], config['summary_name']+'!A2:A')
+        summary_names = [name[0] for name in summary_names]
+        for name in real_target_names+[source_name,]:
+            if name not in summary_names:
+                append_to_sheet(config['spreadsheet_id'], config['summary_name']+'!A1:A1', 
+                            [[name, f'=COUNTIF({config["sheet_name"]}!A:A, "{name}")', f'=COUNTIF({config["sheet_name"]}!B:B, "{name}")']],
+                            value_input_option='USER_ENTERED')
     else:
-        say(f"Hi <@{source}>! It seems you didn't mention any user. If this is a bug, please contact the bot developers.")
+        say(f"Hi <@{source}>! It seems you didn't mention any other user. If this is a bug, please contact the bot developer.")
 
 if __name__ == "__main__":
     # parse config path

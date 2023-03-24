@@ -24,4 +24,5 @@ def parse_cfg(cfg_path='temp/config.json'):
         'timezone': tz, 
         'spreadsheet_id': config['spreadsheet_id'], 
         'sheet_name': config['sheet_name'],
+        'summary_name': config['summary_name'],
         }

@@ -19,19 +19,16 @@ def get_from_sheet(sheet_id, sheet_range):
     except HttpError as err:
         logging.error(err)
 
-def append_to_sheet(sheet_id, sheet_range, values):
+def append_to_sheet(sheet_id, sheet_range, values, value_input_option='RAW'):
     """Append a row to google sheet"""
     cred = load_credential()
     try:
-        print(sheet_id)
-        print(sheet_range)
-        print(values)
         service = build('sheets', 'v4', credentials=cred)
         sheet = service.spreadsheets()
         result = sheet.values().append(
             spreadsheetId=sheet_id,
             range=sheet_range,
-            valueInputOption='RAW',
+            valueInputOption=value_input_option,
             body={
                 'values': values
             }
