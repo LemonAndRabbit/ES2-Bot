@@ -5,6 +5,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from .crendential import load_credential
 
+logger = logging.getLogger(__name__)
+
 def get_from_sheet(sheet_id, sheet_range):
     """Get a range of values from google sheet"""
     cred = load_credential()
@@ -17,7 +19,7 @@ def get_from_sheet(sheet_id, sheet_range):
         ).execute()
         return result.get('values', [])
     except HttpError as err:
-        logging.error(err)
+        logger.error(err)
 
 def append_to_sheet(sheet_id, sheet_range, values, value_input_option='RAW'):
     """Append a row to google sheet"""
@@ -34,4 +36,4 @@ def append_to_sheet(sheet_id, sheet_range, values, value_input_option='RAW'):
             }
         ).execute()
     except HttpError as err:
-        logging.error(err)
+        logger.error(err)
