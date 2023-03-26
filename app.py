@@ -19,6 +19,8 @@ def handle_app_mention_events(body, say):
     """Deaful message event handler"""
     # parse the message
     logger.debug(body)
+    if 'edited' in body['event']:
+        return
     text = body['event']['text']
     source = body['event']['user']
     target = regex.match_user.findall(text)
