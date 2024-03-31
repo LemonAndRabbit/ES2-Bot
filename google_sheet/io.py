@@ -7,9 +7,9 @@ from .crendential import load_credential
 
 logger = logging.getLogger(__name__)
 
-def get_from_sheet(sheet_id, sheet_range):
+def get_from_sheet(sheet_id, sheet_range, cred_folder=None):
     """Get a range of values from google sheet"""
-    cred = load_credential()
+    cred = load_credential(cred_folder=cred_folder)
     try:
         service = build('sheets', 'v4', credentials=cred)
         sheet = service.spreadsheets()
@@ -21,9 +21,9 @@ def get_from_sheet(sheet_id, sheet_range):
     except HttpError as err:
         logger.error(err)
 
-def append_to_sheet(sheet_id, sheet_range, values, value_input_option='RAW'):
+def append_to_sheet(sheet_id, sheet_range, values, value_input_option='RAW', cred_folder=None):
     """Append a row to google sheet"""
-    cred = load_credential()
+    cred = load_credential(cred_folder=cred_folder)
     try:
         service = build('sheets', 'v4', credentials=cred)
         sheet = service.spreadsheets()
